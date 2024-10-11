@@ -1,9 +1,8 @@
 {
   "name": "mbti",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
-    "translate": "yarn json-autotranslate -i locales -s deepl-free -l EN -t ZH -c xxx,default,5000000",
     "dev": "next dev",
     "build": "next build",
     "export": "next export",
@@ -25,7 +24,6 @@
     "eslint-config-next": "13.1.1",
     "framer-motion": "^6.5.1",
     "idb": "^7.1.1",
-    "json-autotranslate": "^1.14.3",
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",

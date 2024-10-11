@@ -14,16 +14,33 @@ export default function Nav() {
       alignItems="center"
       overflowX="hidden"
     >
-      <Link href="/">
-        <Button
-          colorScheme="black"
-          variant="link"
-          fontWeight="bold"
-          textTransform="uppercase"
+      <Flex
+        gap={5}
+        alignItems="center"
+        overflowX="hidden"
+      >
+        <Link href="/">
+          <Button
+            colorScheme="black"
+            variant="link"
+            fontWeight="bold"
+            textTransform="uppercase"
+          >
+            MBTI 性格测试
+          </Button>
+        </Link>
+        {/* GitHub Repo stars */}
+        <a
+          href="https://github.com/vsme/mbti"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          MBTI 性格测试
-        </Button>
-      </Link>
+          <img
+            src="//img.shields.io/github/stars/vsme/mbti"
+            alt="GitHub Repo stars"
+          />
+        </a>
+      </Flex>
       <Link href="/test/result/history">
         <Button
           variant="solid"
