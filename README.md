@@ -3,7 +3,7 @@
 ## 项目优化
 
 1. 完全前端化, 只需要通过前端就能完成部署, 直接使用 nginx 即可
-2. 运行`npm install; npm npm run static`
+2. 运行`npm install; npm run static`
 3. 生成文件在 out 目录下
 
 ## 项目简介
