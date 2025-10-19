@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useRadioGroup, Flex, Text, Button } from "@chakra-ui/react";
 
@@ -13,9 +12,11 @@ import {
 } from "../../lib/personality-test";
 import useUserTestAnswersStore from "../../store/use-user-test-answers";
 
-export default function TestQuestion() {
-  const router = useRouter();
+interface TestQuestionProps {
+  onComplete: (resultId: number) => void;
+}
 
+export default function TestQuestion({ onComplete }: TestQuestionProps) {
   const { userTestAnswers, setUserTestAnswers } = useUserTestAnswersStore();
 
   const [currentPersonalityTestIndex, setCurrentPersonalityTestIndex] =
@@ -70,26 +71,31 @@ export default function TestQuestion() {
     });
   }
 
-  function handleSeeResultButtonClick() {
+  async function handleSeeResultButtonClick() {
     const timestamp = Date.now();
     const testScores = userTestAnswers.map((answer, index) =>
       getQuestionAnswerScore(index + 1, answer)
     );
 
-    saveTestResult({
-      testAnswers: userTestAnswers,
-      testScores,
-      timestamp,
-    })
-      .tap(() => {
-        setUserTestAnswers([]);
-      })
-      .tapOk((id) => {
-        router.replace(`/test/result/?testResultId=${id}`);
-      })
-      .tapError((error) => {
-        console.error(error);
+    try {
+      const result = await saveTestResult({
+        testAnswers: userTestAnswers,
+        testScores,
+        timestamp,
       });
+      
+      result.match({
+        Ok: (id) => {
+          setUserTestAnswers([]);
+          onComplete(id); // Call the onComplete callback with the result id
+        },
+        Error: (error) => {
+          console.error(error);
+        }
+      });
+    } catch (error) {
+      console.error("Failed to save test result:", error);
+    }
   }
 
   return (

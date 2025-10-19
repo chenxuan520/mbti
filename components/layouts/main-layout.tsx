@@ -1,33 +1,21 @@
-import Head from "next/head";
 import { ReactNode } from "react";
 import { Flex, Box } from "@chakra-ui/react";
 
 import Nav from "../common/nav";
 import Footer from "../common/footer";
+import Metadata from "../common/Metadata";
 
 interface MainLayoutProps {
   children: ReactNode;
-  hideBackground?: boolean
+  hideBackground?: boolean;
+  title?: string;
+  description?: string;
 }
 
 export default function MainLayout(props: MainLayoutProps) {
   return (
     <>
-      <Head>
-        <title>MBTI 性格测试</title>
-        <meta
-          name="description"
-          content="MBTI 性格测试"
-        />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1"
-        />
-        <link
-          rel="icon"
-          href="/favicon.ico"
-        />
-      </Head>
+      <Metadata title={props.title || 'MBTI 性格测试'} description={props.description || 'MBTI 性格测试'} />
       <Box
         w="full"
         minH="100vh"

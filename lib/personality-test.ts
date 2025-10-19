@@ -1,5 +1,4 @@
-import { openDB } from "idb";
-import { Option, Future, Result } from "@swan-io/boxed";
+import { Option, Result } from "@swan-io/boxed";
 import { personalityTest } from "../data/personality-test";
 import { personalityClassGroup } from "../data/personality-class-groups";
 
@@ -78,27 +77,26 @@ type Perceiving = "P";
 
 type Judging = "J";
 
-const DB_NAME = "MBTI_PERSONALITY_TEST_APP_IDB";
+// localStorage-based functions for static site
+const TEST_RESULT_KEY = "MBTI_TEST_RESULTS";
 
-const DB_VERSION = 1;
+function getStoredTestResults(): TestResult[] {
+  const stored = localStorage.getItem(TEST_RESULT_KEY);
+  if (!stored) return [];
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    console.error("Error parsing test results from localStorage:", e);
+    return [];
+  }
+}
 
-const TEST_RESULT_STORE = "TEST_RESULT_STORE";
-
-async function getDb() {
-  const db = await openDB<{
-    [TEST_RESULT_STORE]: {
-      key: number;
-      value: TestResult;
-    };
-  }>(DB_NAME, DB_VERSION, {
-    upgrade(idb) {
-      idb.createObjectStore(TEST_RESULT_STORE, {
-        keyPath: "timestamp",
-      });
-    },
-  });
-
-  return db;
+function saveStoredTestResults(results: TestResult[]): void {
+  try {
+    localStorage.setItem(TEST_RESULT_KEY, JSON.stringify(results));
+  } catch (e) {
+    console.error("Error saving test results to localStorage:", e);
+  }
 }
 
 export function getQuestionAnswerScore(
@@ -147,22 +145,14 @@ export function getPersonalityClassGroupByTestScores(
 }
 
 export function getSavedTestResult(id: number) {
-  return Future.make<Result<Option<TestResult>, Error>>((resolve) => {
-    getDb()
-      .then((db) => db.get(TEST_RESULT_STORE, id))
-      .then(Option.fromNullable)
-      .then((testResult) => resolve(Result.Ok(testResult)))
-      .catch((error) => resolve(Result.Error(error)));
-  });
-}
-
-export function getAllSavedTestResult() {
-  return Future.make<Result<Option<TestResult[]>, Error>>((resolve) => {
-    getDb()
-      .then((db) => db.getAll(TEST_RESULT_STORE))
-      .then(Option.fromNullable)
-      .then((testResult) => resolve(Result.Ok(testResult)))
-      .catch((error) => resolve(Result.Error(error)));
+  return new Promise<Result<Option<TestResult>, Error>>((resolve) => {
+    try {
+      const results = getStoredTestResults();
+      const testResult = results.find(result => result.timestamp === id);
+      resolve(Result.Ok(Option.fromNullable(testResult)));
+    } catch (error) {
+      resolve(Result.Error(error as Error));
+    }
   });
 }
 
@@ -171,10 +161,19 @@ export function saveTestResult(testResult: {
   testAnswers: TestAnswerOption["type"][];
   testScores: PersonalityClass["type"][];
 }) {
-  return Future.make<Result<number, Error>>((resolve) => {
-    getDb()
-      .then((db) => db.put(TEST_RESULT_STORE, testResult))
-      .then((id) => resolve(Result.Ok(id)))
-      .catch((error) => resolve(Result.Error(error)));
+  return new Promise<Result<number, Error>>((resolve) => {
+    try {
+      const results = getStoredTestResults();
+      const existingIndex = results.findIndex(result => result.timestamp === testResult.timestamp);
+      if (existingIndex !== -1) {
+        results[existingIndex] = testResult;
+      } else {
+        results.push(testResult);
+      }
+      saveStoredTestResults(results);
+      resolve(Result.Ok(testResult.timestamp));
+    } catch (error) {
+      resolve(Result.Error(error as Error));
+    }
   });
 }

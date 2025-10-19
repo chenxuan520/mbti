@@ -5,7 +5,11 @@ import TestMenu from "./test-menu";
 import TestInstructions from "./test-instructions";
 import TestQuestion from "./test-question";
 
-export default function TestDisplay() {
+interface TestDisplayProps {
+  onTestComplete?: (resultId: number) => void;
+}
+
+export default function TestDisplay({ onTestComplete }: TestDisplayProps) {
   const [showTestInstructions, setShowTestInstructions] = useState(true);
 
   function handleShowInstructionsButtonClick() {
@@ -14,6 +18,15 @@ export default function TestDisplay() {
 
   function handleCloseTestInstructions() {
     setShowTestInstructions(false);
+  }
+
+  function handleTestComplete(resultId: number) {
+    if (onTestComplete) {
+      onTestComplete(resultId);
+    } else {
+      // Fallback behavior - for static usage
+      window.location.hash = `#result-${resultId}`;
+    }
   }
 
   return (
@@ -42,7 +55,7 @@ export default function TestDisplay() {
             onCloseTestInstructions={handleCloseTestInstructions}
           />
         ) : (
-          <TestQuestion />
+          <TestQuestion onComplete={handleTestComplete} />
         )}
       </Flex>
     </Flex>

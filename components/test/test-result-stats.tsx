@@ -21,16 +21,16 @@ function ScoreStats(props: {
       px={2}
       gap={2}
       rounded="md"
-      justifyContent="space-between"
       bg="white"
+      minW="fit-content"  // 确保有足够的宽度显示内容
     >
-      <Text fontWeight="semibold">
+      <Text fontWeight="semibold" whiteSpace="nowrap">
         {((testScoresFiltered.length / props.testScores.length) * 100)
           .toFixed(2)
           .replace(/[.,]0+$/, "")}
         %
       </Text>
-      <Text>({testScoresFiltered.length})</Text>
+      <Text whiteSpace="nowrap">({testScoresFiltered.length})</Text>
     </Flex>
   );
 }
@@ -51,10 +51,7 @@ export default function TestResultStats(props: TestResultStatsProps) {
     <Flex
       my={4}
       mx={{ base: 0, lg: 4 }}
-      w={{
-        base: "full",
-        lg: "25%",
-      }}
+      w="full"
       h="min-content"
       p={2}
       gap={4}
@@ -76,22 +73,31 @@ export default function TestResultStats(props: TestResultStatsProps) {
       {personalityClasses.map((personalityClass, index) => (
         <Flex
           key={index}
-          p={2}
+          p={0}  // 移除内边距，让背景色完全填充
           rounded="md"
           justifyContent="space-between"
           alignItems="center"
           bg={`${statsColorScheme[index]}.500`}
+          overflow="hidden"  // 确保内容不会溢出
         >
-          <Text
-            fontWeight="semibold"
-            color="white"
+          <Flex
+            flex={1}
+            alignItems="center"
+            px={2}
+            py={1}
           >
-            {personalityClass.description}
-          </Text>
-          <ScoreStats
-            testScores={props.testResult.testScores}
-            targetScore={personalityClass.type}
-          />
+            <Text
+              fontWeight="semibold"
+              color="white"
+              flex={1}
+            >
+              {personalityClass.description}
+            </Text>
+            <ScoreStats
+              testScores={props.testResult.testScores}
+              targetScore={personalityClass.type}
+            />
+          </Flex>
         </Flex>
       ))}
     </Flex>

@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export",
+    "export": "next build && next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "static": "npm run build && npm run export"
   },
   "dependencies": {
     "@chakra-ui/react": "2.4.2",

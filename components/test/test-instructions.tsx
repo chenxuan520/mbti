@@ -42,7 +42,7 @@ export default function TestInstructions(props: TestInstructionsProps) {
       <Button
         w="min-content"
         colorScheme="primary"
-        alignSelf="flex-end"
+        alignSelf="center"
         onClick={props.onCloseTestInstructions}
       >
         好的，我明白了！

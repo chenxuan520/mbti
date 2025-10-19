@@ -29,7 +29,7 @@ export default function Footer() {
         </Link>
       </Text>
       <Text>
-        Made by{" "}
+        Made origin by{" "}
         <Link
           href="https://github.com/vsme"
           target="_blank"

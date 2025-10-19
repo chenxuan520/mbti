@@ -37,9 +37,7 @@ export default function TestResultTableOfContent() {
     <Flex
       mx={4}
       my={4}
-      w={{
-        base: "25%",
-      }}
+      w="full"
       h="min-content"
       p={2}
       gap={4}
@@ -69,6 +67,7 @@ export default function TestResultTableOfContent() {
             onClick={(event) =>
               handleTableOfContentLinkClick(event, heading.id)
             }
+            minW="fit-content"  // 确保有足够的宽度显示内容
           >
             <Link href={`#${heading.id}`}>{heading.text}</Link>
           </ListItem>

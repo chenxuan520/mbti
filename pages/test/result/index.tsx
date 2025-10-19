@@ -1,65 +1,82 @@
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Option, AsyncData, Result } from "@swan-io/boxed";
-import { Flex, Show, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 
 import MainLayout from "../../../components/layouts/main-layout";
-import TestResult from "../../../components/test/test-result";
-import TestResultTableOfContent from "../../../components/test/test-result-table-of-content";
-import TestResultStats from "../../../components/test/test-result-stats";
+import TestResultContent from "../../../components/test/test-result-content";
 import {
   TestResult as ITestResult,
   getSavedTestResult,
+  getPersonalityClassGroupByTestScores,
 } from "../../../lib/personality-test";
 
-export default function TestResultPage() {
-  const router = useRouter();
+interface TestResultPageProps {
+  resultId?: number;
+}
 
+export default function TestResultPage({ resultId }: TestResultPageProps) {
   const [testResult, setTestResult] = useState<
     AsyncData<Result<Option<ITestResult>, Error>>
   >(AsyncData.NotAsked());
 
   useEffect(() => {
-    if (router.isReady) {
+    const id = resultId || getTestIdFromHash() || getTestIdFromURL();
+    if (id) {
       setTestResult(AsyncData.Loading());
-
-      const id = parseInt(router.query.testResultId as string);
-
-      getSavedTestResult(id).tap((result) =>
+      
+      getSavedTestResult(id).then((result) =>
         setTestResult(AsyncData.Done(result))
       );
     }
-  }, [router.isReady, router.query.testResultId]);
+  }, [resultId]);
+
+  function getTestIdFromHash(): number | null {
+    const hash = window.location.hash;
+    if (hash.startsWith('#result-')) {
+      const id = parseInt(hash.substring(8));
+      return isNaN(id) ? null : id;
+    }
+    return null;
+  }
+
+  function getTestIdFromURL(): number | null {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('testResultId');
+    if (id) {
+      const numId = parseInt(id);
+      return isNaN(numId) ? null : numId;
+    }
+    return null;
+  }
+
+  let pageTitle = "MBTI 测试结果";
+  let pageDescription = "查看您的MBTI性格测试结果";
+
+  if (testResult.match) {
+    testResult.match({
+      Done: (result) =>
+        result.match({
+          Ok: (value) =>
+            value.match({
+              Some: (data) => {
+                const personalityClassGroup = getPersonalityClassGroupByTestScores(
+                  data.testScores
+                );
+                pageTitle = `MBTI结果 - ${personalityClassGroup.type} ${personalityClassGroup.name}`;
+                pageDescription = `您的MBTI性格类型是${personalityClassGroup.type} ${personalityClassGroup.name}，了解您的性格特征和优势`;
+              },
+              None: () => {}
+            }),
+          Error: () => {}
+        }),
+      Loading: () => {},
+      NotAsked: () => {}
+    });
+  }
 
   return (
-    <MainLayout hideBackground={true}>
-      {testResult.match({
-        NotAsked: () => <Text>加载中</Text>,
-        Loading: () => <Text>加载中</Text>,
-        Done: (result) =>
-          result.match({
-            Error: () => <Text>出现错误！请刷新页面！</Text>,
-            Ok: (value) =>
-              value.match({
-                Some: (data) => (
-                  <Flex
-                    h="full"
-                    direction={{
-                      base: "column",
-                      lg: "row",
-                    }}
-                  >
-                    <TestResultStats testResult={data} />
-                    <TestResult testResult={data} />
-                    <Show above="lg">
-                      <TestResultTableOfContent />
-                    </Show>
-                  </Flex>
-                ),
-                None: () => <Text>没有数据</Text>,
-              }),
-          }),
-      })}
+    <MainLayout title={pageTitle} description={pageDescription}>
+      <TestResultContent resultId={resultId} />
     </MainLayout>
   );
 }

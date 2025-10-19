@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, Text, Link } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { FiChevronRight } from "react-icons/fi";
 
@@ -10,6 +9,12 @@ interface TestResultHistoryProps {
 }
 
 export default function TestResultHistory(props: TestResultHistoryProps) {
+  const handleResultClick = (resultId: number) => {
+    window.location.hash = `#result-${resultId}`;
+    // 刷新页面以触发结果加载
+    window.location.reload();
+  };
+
   return (
     <Flex
       my={4}
@@ -38,8 +43,8 @@ export default function TestResultHistory(props: TestResultHistoryProps) {
         {props.testResults.map((testResult) => (
           <Flex
             key={testResult.timestamp}
-            as={Link}
-            href={`/test/result/?testResultId=${testResult.timestamp}`}
+            as="div" // 使用 div 而不是 Link 组件
+            onClick={() => handleResultClick(testResult.timestamp)}
             py={2}
             px={4}
             w="full"

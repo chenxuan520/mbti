@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Flex,
   Heading,
@@ -11,6 +10,8 @@ import {
   Td,
   UnorderedList,
   ListItem,
+  Image,
+  Button,
 } from "@chakra-ui/react";
 
 import {
@@ -30,10 +31,7 @@ export default function TestResult(props: TestResultProps) {
   return (
     <Flex
       my={4}
-      w={{
-        base: "full",
-        lg: "50%",
-      }}
+      w="full"
       h="full"
       px={8}
       gap={4}
@@ -61,10 +59,9 @@ export default function TestResult(props: TestResultProps) {
         {personalityClassGroup.nameDescription}
       </Text> */}
       <Image
-        alt="illustration"
         src={`/images/mbti/${personalityClassGroup.type.toLocaleUpperCase()}.png`}
-        width={200}
-        height={200}
+        alt="illustration"
+        boxSize="200px"
       />
       <Heading
         scrollMarginTop={8}
