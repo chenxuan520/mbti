@@ -19,7 +19,7 @@ jobs:
       - name: Install and test
         run: |
           npm install
-          npm build static
+          npm run static
           tar -zcvf mbti.tar.gz ./out
       - name: Release
         uses: softprops/action-gh-release@v2 #具体参考https://github.com/softprops/action-gh-release
