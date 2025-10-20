@@ -17,7 +17,7 @@ export default function Footer() {
       <Text>
         本网站上的所有测试都基于此{" "}
         <Link
-          href="/MBTI-personality-test.pdf"
+          href="https://github.com/chenxuan520/mbti/blob/main/MBTI-personality-test.pdf"
           target="_blank"
         >
           <Button
